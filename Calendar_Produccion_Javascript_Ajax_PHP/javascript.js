@@ -12,39 +12,81 @@ xhttp.onreadystatechange = function() {
         * Ejecutar desde htdocs
         */
         respuestaJSON = JSON.parse(this.responseText);
+            /*for(var i = 0; i < respuestaJSON.items.length; i++){
+                console.log(respuestaJSON.items[i].summary);
+            }*/
         let cuantos_eventos_mostrar = 6;
         let en_caso_que_no_haya_eventos = cuantos_eventos_mostrar;
         let url_actual = sede_ciudad_basado_en_url();
         let pos_item_evento = 0;
         do{
+            console.log('url_actual = ' + url_actual);
+            let summary_evento = respuestaJSON.items[pos_item_evento].summary.toLowerCase();
             switch (url_actual){/*En que página estamos*/
+                /*
+                    bilbo -> bilbao
+                    loiola-azpeitia -> loyola-azpeitia
+                    donostia -> san sebastian
+                    irunea -> pamplona
+                    gasteiz -> vitoria
+                */
 
                 case 'bilbao':
-                    if (respuestaJSON.items[pos_item_evento].summary.toLowerCase().indexOf('bilbao') !== -1){
+                    if (summary_evento.indexOf('bilbao') !== -1 || summary_evento.indexOf('bilbo') !== -1){
+                        evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
+                        cuantos_eventos_mostrar--;
+                    }
+                    break;
+                case 'bilbo':
+                    if (summary_evento.indexOf('bilbao') !== -1 || summary_evento.indexOf('bilbo') !== -1){
                         evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
                         cuantos_eventos_mostrar--;
                     }
                     break;
                 case 'pamplona':
-                    if (respuestaJSON.items[pos_item_evento].summary.toLowerCase().indexOf('pamplona') !== -1){
+                    if (summary_evento.indexOf('pamplona') !== -1 || summary_evento.indexOf('irunea') !== -1){
+                        evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
+                        cuantos_eventos_mostrar--;
+                    }
+                    break;
+                case 'irunea':
+                    if (summary_evento.indexOf('pamplona') !== -1 || summary_evento.indexOf('irunea') !== -1){
                         evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
                         cuantos_eventos_mostrar--;
                     }
                     break;
                 case 'san-sebastian':
-                    if (respuestaJSON.items[pos_item_evento].summary.toLowerCase().indexOf('donostia') !== -1){
+                    if (summary_evento.indexOf('san sebastian') !== -1 || summary_evento.indexOf('donostia') !== -1){
+                        evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
+                        cuantos_eventos_mostrar--;
+                    }
+                    break;
+                case 'donostia':
+                    if (summary_evento.indexOf('san sebastian') !== -1 || summary_evento.indexOf('donostia') !== -1){
                         evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
                         cuantos_eventos_mostrar--;
                     }
                     break;
                 case 'vitoria':
-                    if (respuestaJSON.items[pos_item_evento].summary.toLowerCase().indexOf('vitoria') !== -1){
+                    if (summary_evento.indexOf('vitoria') !== -1 || summary_evento.indexOf('gasteiz') !== -1){
+                        evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
+                        cuantos_eventos_mostrar--;
+                    }
+                    break;
+                case 'gasteiz':
+                    if (summary_evento.indexOf('vitoria') !== -1 || summary_evento.indexOf('gasteiz') !== -1){
                         evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
                         cuantos_eventos_mostrar--;
                     }
                     break;
                 case 'loyola-azpeitia':
-                    if (respuestaJSON.items[pos_item_evento].summary.toLowerCase().indexOf('loyola-azpeitia') !== -1){
+                    if (summary_evento.indexOf('loyola-azpeitia') !== -1 || summary_evento.indexOf('loiola-azpeitia') !== -1){
+                        evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
+                        cuantos_eventos_mostrar--;
+                    }
+                    break;
+                case 'loiola-azpeitia':
+                    if (summary_evento.indexOf('loyola-azpeitia') !== -1 || summary_evento.indexOf('loiola-azpeitia') !== -1){
                         evento_fechas_llamada_insertar(respuestaJSON, pos_item_evento);
                         cuantos_eventos_mostrar--;
                     }
@@ -88,7 +130,7 @@ function insertar_al_DOM(fechaInicioEvento, fechaFinEvento, respuestaJSON, posBu
         '<i class="fa fa-map-marker" aria-hidden="true"></i> '+ ciudad_evento(respuestaJSON.items[posBucle]) +'</div> <div class="titulo_evento">' +
         respuestaJSON.items[posBucle].summary.substring(respuestaJSON.items[posBucle].summary.indexOf(']')+1) + '</div> </div> </div> </li>';
 }
-//Si location es IN-definida devolvemos el [ciudad]
+//Si location del evento de google calendar es IN-definida devolvemos el [ciudad]
 function ciudad_evento(evento) {
     let location = evento.location;
     if(typeof location === "undefined"){
@@ -162,6 +204,13 @@ function horas_dos_digitos(fecha) {
     return (fecha.getHours() < 10 ? '0' : '') + fecha.getHours();
 }
 function sede_ciudad_basado_en_url(){
+    /*
+        bilbo -> bilbao
+        loiola-azpeitia -> loyola-azpeitia
+        donostia -> san sebastian
+        irunea -> pamplona
+        gasteiz -> vitoria
+    */
     let url_sitio = window.location.href;
     if(url_sitio.indexOf('bilbao') !== -1){
         return 'bilbao';
@@ -177,6 +226,21 @@ function sede_ciudad_basado_en_url(){
     }
     else if(url_sitio.indexOf('loyola-azpeitia') !== -1){
         return 'loyola-azpeitia';
+    }
+    else if(url_sitio.indexOf('bilbo') !== -1){
+        return 'bilbo';
+    }
+    else if(url_sitio.indexOf('loiola-azpeitia') !== -1){
+        return 'loiola-azpeitia';
+    }
+    else if(url_sitio.indexOf('donostia') !== -1){
+        return 'donostia';
+    }
+    else if(url_sitio.indexOf('irunea') !== -1){
+        return 'irunea';
+    }
+    else if(url_sitio.indexOf('gasteiz') !== -1){
+        return 'gasteiz';
     }
     else{
         return 'loyola';
