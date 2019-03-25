@@ -12,9 +12,9 @@ xhttp.onreadystatechange = function() {
         * Ejecutar desde htdocs
         */
         respuestaJSON = JSON.parse(this.responseText);
-            /*for(var i = 0; i < respuestaJSON.items.length; i++){
+            for(var i = 0; i < respuestaJSON.items.length; i++){
                 console.log(respuestaJSON.items[i].summary);
-            }*/
+            }
         let cuantos_eventos_mostrar = 6;
         let en_caso_que_no_haya_eventos = cuantos_eventos_mostrar;
         let url_actual = sede_ciudad_basado_en_url();
